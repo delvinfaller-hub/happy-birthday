@@ -6,346 +6,401 @@
     <title>Happy Birthday! 🎁</title>
     <style>
         :root {
-            --bg-color: #ffeef2;
-            --env-color: #ff6b8b;
-            --env-inside: #ff8da5;
-            --book-bg: #fff0f5;
-        }
+    --bg-color: #ffdce8;
+    --env-color: #ff5f95;
+    --env-inside: #ff89b0;
+    --book-bg: #fff4f8;
+    --text-color: #5c4350;
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        body {
-            background-color: var(--bg-color);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+body {
+    background:
+        radial-gradient(circle at top, #fff0f6 0%, #ffdce8 45%, #ffc7dc 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        .container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+.container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
 
-        /* --- ENVELOPE STYLES --- */
-        .envelope-wrapper {
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.5s ease;
-            z-index: 20;
-        }
+/* ENVELOPE */
 
-        .envelope {
-            position: relative;
-            width: 280px;
-            height: 180px;
-            background-color: var(--env-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            border-radius: 0 0 10px 10px;
-        }
+.envelope-wrapper {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+    z-index: 20;
+}
 
-        .flap {
-            position: absolute;
-            top: 0;
-            left: 0;
-            border-left: 140px solid transparent;
-            border-right: 140px solid transparent;
-            border-top: 100px solid var(--env-color);
-            transform-origin: top;
-            transition: transform 0.4s ease 0.2s, z-index 0.2s ease 0.4s;
-            z-index: 3;
-        }
+.envelope {
+    position: relative;
+    width: 280px;
+    height: 180px;
+    background: linear-gradient(145deg, #ff76a5, #ff4d8c);
+    box-shadow: 0 15px 40px rgba(255, 105, 150, 0.3);
+    border-radius: 0 0 12px 12px;
+}
 
-        .pocket {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            border-left: 140px solid var(--env-inside);
-            border-right: 140px solid var(--env-inside);
-            border-bottom: 90px solid var(--env-inside);
-            border-top: 90px solid transparent;
-            border-radius: 0 0 10px 10px;
-            z-index: 2;
-        }
+.flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-left: 140px solid transparent;
+    border-right: 140px solid transparent;
+    border-top: 100px solid var(--env-color);
+    transform-origin: top;
+    transition: transform 0.4s ease 0.2s, z-index 0.2s ease 0.4s;
+    z-index: 3;
+}
 
-        .letter {
-            position: absolute;
-            bottom: 5px;
-            left: 15px;
-            width: 250px;
-            height: 150px;
-            background: white;
-            border-radius: 5px;
-            z-index: 1;
-            transition: transform 0.6s ease 0.4s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+.pocket {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-left: 140px solid var(--env-inside);
+    border-right: 140px solid var(--env-inside);
+    border-bottom: 90px solid var(--env-inside);
+    border-top: 90px solid transparent;
+    border-radius: 0 0 12px 12px;
+    z-index: 2;
+}
 
-        .letter p {
-            color: var(--env-color);
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
+.letter {
+    position: absolute;
+    bottom: 5px;
+    left: 15px;
+    width: 250px;
+    height: 150px;
+    background: white;
+    border-radius: 10px;
+    z-index: 1;
+    transition: transform 0.6s ease 0.4s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
 
-        .envelope-wrapper.open .flap {
-            transform: rotateX(180deg);
-            z-index: 0;
-        }
+.letter p {
+    color: var(--env-color);
+    font-weight: bold;
+    font-size: 1.3rem;
+}
 
-        .envelope-wrapper.open .letter {
-            transform: translateY(-130px);
-            z-index: 2;
-        }
+/* OPEN ANIMATION */
 
-        .envelope-wrapper.open {
-            transform: translateY(100px) scale(0.5);
-            opacity: 0;
-            pointer-events: none;
-            transition: transform 0.8s ease, opacity 0.4s ease 0.6s;
-        }
+.envelope-wrapper.open .flap {
+    transform: rotateX(180deg);
+    z-index: 0;
+}
 
-        /* Floating Hearts */
-        .hearts {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        .heart {
-            position: absolute;
-            opacity: 0;
-            font-size: 1.5rem;
-            transition: transform 1s ease, opacity 1s ease;
-        }
-        .envelope-wrapper.open .H1 { transform: translate(-80px, -150px) scale(1.5); opacity: 1; transition-delay: 0.4s;}
-        .envelope-wrapper.open .H2 { transform: translate(0px, -200px) scale(1.8); opacity: 1; transition-delay: 0.5s;}
-        .envelope-wrapper.open .H3 { transform: translate(80px, -150px) scale(1.5); opacity: 1; transition-delay: 0.6s;}
+.envelope-wrapper.open .letter {
+    transform: translateY(-130px);
+    z-index: 2;
+}
 
+.envelope-wrapper.open {
+    transform: translateY(100px) scale(0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.8s ease, opacity 0.4s ease 0.6s;
+}
 
-        /* --- FLIPBOOK STYLES --- */
-        .book-container {
-            position: absolute;
-            width: 650px;
-            height: 450px;
-            perspective: 2000px;
-            transition: opacity 1s ease 0.8s, transform 1s ease 0.8s;
-        }
+/* HEARTS */
 
-        .book-container.hidden {
-            opacity: 0;
-            transform: scale(0.8);
-            pointer-events: none;
-        }
+.hearts {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
 
-        .book {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-        }
+.heart {
+    position: absolute;
+    opacity: 0;
+    font-size: 2rem;
+    transition: transform 1s ease, opacity 1s ease;
+}
 
-        .page {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            top: 0;
-            right: 0;
-            transform-origin: left center;
-            transform-style: preserve-3d;
-            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1;
-            pointer-events: none; /* Default to off so background pages don't block active ones */
-        }
+.envelope-wrapper.open .H1 {
+    transform: translate(-80px, -150px) scale(1.5);
+    opacity: 1;
+}
 
-        /* Only allow click events on the pages that are actively visible */
-        .page.active-visible {
-            pointer-events: auto;
-        }
+.envelope-wrapper.open .H2 {
+    transform: translate(0px, -210px) scale(1.8);
+    opacity: 1;
+}
 
-        .front, .back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background: white;
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            box-shadow: inset 3px 0px 20px rgba(0,0,0,0.05), 5px 0 15px rgba(0,0,0,0.05);
-            backface-visibility: hidden;
-            color: #444;
-        }
+.envelope-wrapper.open .H3 {
+    transform: translate(80px, -150px) scale(1.5);
+    opacity: 1;
+}
 
-        .front h2, .front h3, .back h3 {
-            color: var(--env-color);
-            margin-bottom: 10px;
-        }
+/* BOOK */
 
-        .front p, .back p {
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
+.book-container {
+    position: absolute;
+    width: 650px;
+    height: 450px;
+    perspective: 2000px;
+    transition: opacity 1s ease 0.8s, transform 1s ease 0.8s;
+}
 
-        .back {
-            transform: rotateY(180deg);
-            border-radius: 10px 0 0 10px;
-            box-shadow: inset -3px 0px 20px rgba(0,0,0,0.05), -5px 0 15px rgba(0,0,0,0.05);
-        }
+.book-container.hidden {
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+}
 
-        .front {
-            border-radius: 0 10px 10px 0;
-        }
+.book {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
 
-        .page::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0) 100%);
-            opacity: 0;
-            transition: opacity 0.6s ease;
-            pointer-events: none;
-            transform: translateZ(1px);
-        }
+.page {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+    pointer-events: none;
+}
 
-        .page.flipped {
-            transform: rotateY(-180deg) scaleX(0.98) skewY(-0.5deg);
-        }
+.page.active-visible {
+    pointer-events: auto;
+}
 
-        .page.flipped::after {
-            opacity: 0.15;
-        }
+.front,
+.back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background:
+        linear-gradient(to bottom, #ffffff, #fff5f8);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow:
+        inset 3px 0px 20px rgba(255,192,203,0.15),
+        0 8px 25px rgba(255,105,150,0.12);
+    backface-visibility: hidden;
+    color: var(--text-color);
+}
 
-        .arrow {
-            margin-top: 15px;
-            font-size: 1.5rem;
-            animation: bounce 1s infinite alternate;
-        }
+.front {
+    border-radius: 0 16px 16px 0;
+}
 
-        /* --- PHOTO CONTAINER STYLES --- */
-        .photo-frame {
-            width: 85%;
-            height: 160px;
-            overflow: hidden;
-            border-radius: 8px;
-            border: 4px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            cursor: zoom-in;
-            transition: transform 0.3s ease;
-            margin-top: 10px;
-        }
+.back {
+    transform: rotateY(180deg);
+    border-radius: 16px 0 0 16px;
+}
 
-        .photo-frame:hover {
-            transform: scale(1.03) rotate(1deg);
-        }
+.front h2,
+.front h3,
+.back h3 {
+    color: #ff4d8c;
+    margin-bottom: 10px;
+}
 
-        .photo-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+.front p,
+.back p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
 
-        /* --- POP-UP MODAL OVERLAY STYLES --- */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-        }
+.page.flipped {
+    transform: rotateY(-180deg);
+}
 
-        .modal.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
+.arrow {
+    margin-top: 15px;
+    font-size: 1.5rem;
+    animation: bounce 1s infinite alternate;
+}
 
-        .modal-content {
-            max-width: 80%;
-            max-height: 70%;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: scale(0.7);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+/* PHOTO */
 
-        .modal.open .modal-content {
-            transform: scale(1);
-        }
+.photo-frame {
+    width: 85%;
+    height: 160px;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(255,105,150,0.2);
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
+    margin-top: 10px;
+}
 
-        .modal-caption {
-            color: white;
-            margin-top: 15px;
-            font-size: 1.2rem;
-            text-align: center;
-            max-width: 70%;
-            font-weight: 300;
-        }
+.photo-frame:hover {
+    transform: scale(1.03);
+}
 
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 2.5rem;
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.2s;
-        }
+.photo-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-        .modal-close:hover {
-            transform: scale(1.1);
-        }
+/* MODAL */
 
-        /* --- FIXED NAVIGATION OVERLAYS --- */
-        .click-zone {
-            position: absolute;
-            top: 0;
-            width: 50%;
-            height: 100%;
-            z-index: 100;
-            cursor: pointer;
-            display: none;
-            pointer-events: none; /* Allows clicks to pass through to pages & pictures directly */
-        }
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.88);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
 
-        .click-zone.left { left: 0; }
-        .click-zone.right { right: 0; }
+.modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
 
-        @keyframes bounce {
-            from { transform: translateX(0); }
-            to { transform: translateX(10px); }
-        }
+.modal-content {
+    max-width: 85%;
+    max-height: 75%;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    transform: scale(0.7);
+    transition: transform 0.4s ease;
+}
+
+.modal.open .modal-content {
+    transform: scale(1);
+}
+
+.modal-caption {
+    color: white;
+    margin-top: 15px;
+    font-size: 1rem;
+    text-align: center;
+    max-width: 80%;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    color: white;
+    font-size: 2.5rem;
+    cursor: pointer;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+    .book-container {
+        width: 95vw;
+        height: 70vh;
+    }
+
+    .front,
+    .back {
+        padding: 18px;
+    }
+
+    .front p,
+    .back p {
+        font-size: 0.82rem;
+    }
+
+    .front h2 {
+        font-size: 1.5rem;
+    }
+
+    .front h3,
+    .back h3 {
+        font-size: 1rem;
+    }
+
+    .photo-frame {
+        width: 95%;
+        height: 130px;
+    }
+
+    .envelope {
+        transform: scale(0.9);
+    }
+}
+
+@media (max-width: 480px) {
+
+    .book-container {
+        width: 98vw;
+        height: 65vh;
+    }
+
+    .front,
+    .back {
+        padding: 14px;
+    }
+
+    .front p,
+    .back p {
+        font-size: 0.75rem;
+    }
+
+    .photo-frame {
+        height: 110px;
+    }
+
+    .modal-caption {
+        font-size: 0.9rem;
+    }
+}
+
+@keyframes bounce {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(10px);
+    }
+}
     </style>
 </head>
 <body>
@@ -620,3 +675,5 @@
     </script>
 </body>
 </html>
+
+         
