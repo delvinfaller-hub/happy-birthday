@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday! 🎁</title>
+    <style>
+        :root {
+            --bg-color: #ffeef2;
+            --env-color: #ff6b8b;
+            --env-inside: #ff8da5;
+            --book-bg: #fff0f5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- ENVELOPE STYLES --- */
+        .envelope-wrapper {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+            z-index: 20;
+        }
+
+        .envelope {
+            position: relative;
+            width: 280px;
+            height: 180px;
+            background-color: var(--env-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 0 0 10px 10px;
+        }
+
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 100px solid var(--env-color);
+            transform-origin: top;
+            transition: transform 0.4s ease 0.2s, z-index 0.2s ease 0.4s;
+            z-index: 3;
+        }
+
+        .pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-left: 140px solid var(--env-inside);
+            border-right: 140px solid var(--env-inside);
+            border-bottom: 90px solid var(--env-inside);
+            border-top: 90px solid transparent;
+            border-radius: 0 0 10px 10px;
+            z-index: 2;
+        }
+
+        .letter {
+            position: absolute;
+            bottom: 5px;
+            left: 15px;
+            width: 250px;
+            height: 150px;
+            background: white;
+            border-radius: 5px;
+            z-index: 1;
+            transition: transform 0.6s ease 0.4s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .letter p {
+            color: var(--env-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .envelope-wrapper.open .flap {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .envelope-wrapper.open .letter {
+            transform: translateY(-130px);
+            z-index: 2;
+        }
+
+        .envelope-wrapper.open {
+            transform: translateY(100px) scale(0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.8s ease, opacity 0.4s ease 0.6s;
+        }
+
+        /* Floating Hearts */
+        .hearts {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .heart {
+            position: absolute;
+            opacity: 0;
+            font-size: 1.5rem;
+            transition: transform 1s ease, opacity 1s ease;
+        }
+        .envelope-wrapper.open .H1 { transform: translate(-80px, -150px) scale(1.5); opacity: 1; transition-delay: 0.4s;}
+        .envelope-wrapper.open .H2 { transform: translate(0px, -200px) scale(1.8); opacity: 1; transition-delay: 0.5s;}
+        .envelope-wrapper.open .H3 { transform: translate(80px, -150px) scale(1.5); opacity: 1; transition-delay: 0.6s;}
+
+
+        /* --- FLIPBOOK STYLES --- */
+        .book-container {
+            position: absolute;
+            width: 650px;
+            height: 450px;
+            perspective: 2000px;
+            transition: opacity 1s ease 0.8s, transform 1s ease 0.8s;
+        }
+
+        .book-container.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+
+        .book {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        .page {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            top: 0;
+            right: 0;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+            pointer-events: none; /* Default to off so background pages don't block active ones */
+        }
+
+        /* Only allow click events on the pages that are actively visible */
+        .page.active-visible {
+            pointer-events: auto;
+        }
+
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: white;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: inset 3px 0px 20px rgba(0,0,0,0.05), 5px 0 15px rgba(0,0,0,0.05);
+            backface-visibility: hidden;
+            color: #444;
+        }
+
+        .front h2, .front h3, .back h3 {
+            color: var(--env-color);
+            margin-bottom: 10px;
+        }
+
+        .front p, .back p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .back {
+            transform: rotateY(180deg);
+            border-radius: 10px 0 0 10px;
+            box-shadow: inset -3px 0px 20px rgba(0,0,0,0.05), -5px 0 15px rgba(0,0,0,0.05);
+        }
+
+        .front {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .page::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0) 100%);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+            transform: translateZ(1px);
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg) scaleX(0.98) skewY(-0.5deg);
+        }
+
+        .page.flipped::after {
+            opacity: 0.15;
+        }
+
+        .arrow {
+            margin-top: 15px;
+            font-size: 1.5rem;
+            animation: bounce 1s infinite alternate;
+        }
+
+        /* --- PHOTO CONTAINER STYLES --- */
+        .photo-frame {
+            width: 85%;
+            height: 160px;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .photo-frame:hover {
+            transform: scale(1.03) rotate(1deg);
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- POP-UP MODAL OVERLAY STYLES --- */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            max-width: 80%;
+            max-height: 70%;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0.7);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal.open .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-caption {
+            color: white;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            text-align: center;
+            max-width: 70%;
+            font-weight: 300;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .modal-close:hover {
+            transform: scale(1.1);
+        }
+
+        /* --- FIXED NAVIGATION OVERLAYS --- */
+        .click-zone {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+            pointer-events: none; /* Allows clicks to pass through to pages & pictures directly */
+        }
+
+        .click-zone.left { left: 0; }
+        .click-zone.right { right: 0; }
+
+        @keyframes bounce {
+            from { transform: translateX(0); }
+            to { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 1. THE ENVELOPE -->
+        <div class="envelope-wrapper" id="envelope">
+            <div class="envelope">
+                <div class="flap"></div>
+                <div class="pocket"></div>
+                <div class="letter">
+                    <p>Open Me! ✨</p>
+                </div>
+            </div>
+            <div class="hearts">
+                <div class="heart H1">❤️</div>
+                <div class="heart H2">💖</div>
+                <div class="heart H3">💝</div>
+            </div>
+        </div>
+
+        <!-- 2. THE FLIPBOOK -->
+        <div class="book-container hidden" id="bookContainer">
+            <!-- Click zones are now virtual wrappers; actual clicks happen on the active sheets -->
+            <div class="click-zone left" id="leftZone"></div>
+            <div class="click-zone right" id="rightZone"></div>
+
+            <div class="book">
+                <!-- PAGE 1 (Cover / Right Side) & PAGE 2 (Backside / Left Side) -->
+                <div class="page page-1" onclick="handleBookClick(event)">
+                    <div class="front">
+                        <h2>Happy Birthday! 🎂</h2>
+                        <p>Click the right side to unfold the memories...</p>
+                        <span class="arrow">👉</span>
+                    </div>
+                    <div class="back">
+                        <h3>Hi... 📖</h3>
+                        <p>Hi Annalyn Happy happy Birthday to you.</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'The day everything changed! ✨')">
+                            <img src="image/pic1.jpg" alt="Memory 1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE 3 (Right Side) & PAGE 4 (Backside / Left Side) -->
+                <div class="page page-2" onclick="handleBookClick(event)">
+                    <div class="front">
+                        <h3>Thank you for the experience🌟</h3>
+                        <p>For inviting me to the Feast.</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'Birthday ko yun yung Inaya mo ako mag Feast')">
+                            <img src="image/pic2.jpg" alt="Memory 2">
+                        </div>
+                    </div>
+                    <div class="back">
+                        <h3>Thank you for the experience🌟</h3>
+                        <p>for the Mountain.</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'Kasama mo parin ako sa mga bundok kahapon lang meron haha')">
+                            <img src="image/pic5.jpg" alt="Memory 3">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="page page-3" onclick="handleBookClick(event)">
+                    <div class="front">
+                        <h3>Thank you for the experience🌟</h3>
+                        <p>For Ocean.</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'Dive tayong Dalawa?')">
+                            <img src="image/pic13.jpg" alt="Memory 2">
+                        </div>
+                    </div>
+                    <div class="back">
+                        <h3>Thank you for the experience🌟</h3>
+                        <p>For Baguio Staycation.</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'Masaya naka pag chill tayo kahit biglaan')">
+                            <img src="image/pic16.jpg" alt="Memory 3">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="page page-4" onclick="handleBookClick(event)">
+                    <div class="front">
+                        <h3>Thank you for the experience🌟</h3>
+                        <p>For Photobooth.</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'hindi ko man completo yung months')">
+                            <img src="image/pic14.jpg" alt="Memory 2">
+                        </div>
+                    </div>
+                    <div class="back">
+                        <h3>Thank you for the experience🌟</h3>
+                        <p>For late night routine.</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'nakaktulog ako ng maaga dahil sayo')">
+                            <img src="image/pic15.jpg" alt="Memory 3">
+                        </div>
+                    </div>
+                </div>
+
+                  <div class="page page-5" onclick="handleBookClick(event)">
+                    <div class="front">
+
+                        <h3>Thank you for the experience🌟</h3>
+                        <p>For our DATES.</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'Making the best memories with you. 💖')">
+                            <img src="image/pic18.jpg" alt="Memory 2">
+                        </div>
+                    </div>
+                    <div class="back">
+                        <h3>Thank you for the experience🌟</h3>
+                        <p>For City Dives</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'Line training tayo')">
+                            <img src="image/pic4.jpg" alt="Memory 2">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page page-6" onclick="handleBookClick(event)">
+                    <div class="front">
+                        <h3>Thank you for the experience🌟</h3>
+                        <p>For more Adventure ahead of us</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'More ADVENTURE!')">
+                            <img src="image/pic10.jpg" alt="Memory 2">
+                        </div>
+
+                    </div>
+                    <div class="back">
+                       <h3></h3>
+                        <p>This is still my favourite Pic from you</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'Cute Mo DIto. 💖')">
+                            <img src="image/pic9.jpg" alt="Memory 2">
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="page page-7" onclick="handleBookClick(event)">
+                    <div class="front">
+
+                    </div>
+                    <div class="back">
+                        <h3>Praying ❤</h3>
+                        <p>Today, I pray that God blesses you with endless happiness, good health, peace, and strength for every challenge that comes your way. May your heart always be filled with love, your mind with peace, and your life with beautiful moments and genuine people.</p>
+                        <p>I pray that all your dreams, goals, and prayers come true at the right time. May God guide your path, protect you from harm, and shower you with countless blessings this year and always.</p>
+                    </div>
+                </div>
+                <div class="page page-8" onclick="handleBookClick(event)">
+                    <div class="front">
+                        <h3></h3>
+                        <p>Thank you for being such a wonderful person. You deserve all the love, success, and joy in the world.</p>
+                        <p>Happy Birthday once again. Stay blessed always.</p>
+                        <div class="photo-frame" onclick="openPhoto(this, 'Making the best memories with you. 💖')">
+                            <img src="image/pic17.jpg" alt="Memory 2">
+                        </div>
+                    </div>
+                    <div class="back">
+
+                    </div>
+                </div>
+
+                <!-- PAGE 5 (Final Right Side) -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. FULL-SCREEN POP-UP MODAL MARKUP -->
+    <div class="modal" id="photoModal">
+        <span class="modal-close" onclick="closePhoto()">&times;</span>
+        <img class="modal-content" id="modalImg" src="" alt="Expanded Memory">
+        <div class="modal-caption" id="modalCaption"></div>
+    </div>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+        const bookContainer = document.getElementById('bookContainer');
+        const pages = document.querySelectorAll('.page');
+        const leftZone = document.getElementById('leftZone');
+        const rightZone = document.getElementById('rightZone');
+
+        const photoModal = document.getElementById('photoModal');
+        const modalImg = document.getElementById('modalImg');
+        const modalCaption = document.getElementById('modalCaption');
+
+        const totalPages = pages.length;
+        let currentStep = 1;
+
+        envelope.addEventListener('click', () => {
+            envelope.classList.add('open');
+
+            setTimeout(() => {
+                bookContainer.classList.remove('hidden');
+                leftZone.style.display = "block";
+                rightZone.style.display = "block";
+                renderBookState();
+            }, 1000);
+        });
+
+        // Combined click controller: checks if you clicked left or right half of the active page
+        function handleBookClick(event) {
+            const rect = bookContainer.getBoundingClientRect();
+            const clickX = event.clientX - rect.left; // position relative to the book container
+            const bookWidth = rect.width;
+
+            if (clickX > bookWidth / 2) {
+                turnPageRight();
+            } else {
+                turnPageLeft();
+            }
+        }
+
+        function turnPageRight() {
+            if (currentStep <= totalPages) {
+                const pageToFlip = document.querySelector(`.page-${currentStep}`);
+                if (pageToFlip) {
+                    pageToFlip.classList.add('flipped');
+                    currentStep++;
+                    renderBookState();
+                }
+            }
+        }
+
+        function turnPageLeft() {
+            if (currentStep > 1) {
+                currentStep--;
+                const pageToUnflip = document.querySelector(`.page-${currentStep}`);
+                if (pageToUnflip) {
+                    pageToUnflip.classList.remove('flipped');
+                    renderBookState();
+                }
+            }
+        }
+
+        function renderBookState() {
+            pages.forEach((page, index) => {
+                const pageNum = index + 1;
+
+                // Set proper depth layers
+                if (pageNum < currentStep) {
+                    page.style.zIndex = pageNum;
+                } else {
+                    page.style.zIndex = totalPages - pageNum + 1;
+                }
+
+                // Handle which pages can receive user interactions dynamically
+                // Only the page currently turning or immediately visible should handle click events
+                if (pageNum === currentStep || pageNum === currentStep - 1) {
+                    page.classList.add('active-visible');
+                } else {
+                    page.classList.remove('active-visible');
+                }
+            });
+        }
+
+        /* --- POP-UP PHOTO LOGIC --- */
+        function openPhoto(element, captionText) {
+            // CRITICAL: Stop the click from traveling upward to the page flip logic!
+            event.stopPropagation();
+
+            const imgSrc = element.querySelector('img').src;
+            modalImg.src = imgSrc;
+            modalCaption.innerText = captionText;
+            photoModal.classList.add('open');
+        }
+
+        function closePhoto() {
+            photoModal.classList.remove('open');
+        }
+
+        photoModal.addEventListener('click', function(e) {
+            if (e.target === photoModal) {
+                closePhoto();
+            }
+        });
+    </script>
+</body>
+</html>
